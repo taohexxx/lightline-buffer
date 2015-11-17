@@ -27,6 +27,8 @@ A buffer plugin for lightline.vim
 3.	Add this block to your init.vim (for neovim) or .vimrc (for vim)
 
 	```
+	set showtabline=2	" always show tabline
+
 	" lightline-buffer settings
 	let g:lightline_buffer_active_buffer_left = ''
 	let g:lightline_buffer_active_buffer_right = ''
