@@ -18,11 +18,11 @@ A buffer plugin for lightline.vim
 
 2.	Add this repo to your favorite vim plugin manager
 
-[NeoBundle](https://github.com/Shougo/neobundle.vim) is recommended
+	[NeoBundle](https://github.com/Shougo/neobundle.vim) is recommended
 
-```
-NeoBundle 'taohex/lightline-buffer'
-```
+	```
+	NeoBundle 'taohex/lightline-buffer'
+	```
 
 3.	Add this block to your init.vim (for neovim) or .vimrc (for vim)
 
