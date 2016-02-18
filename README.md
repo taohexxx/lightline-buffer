@@ -78,3 +78,6 @@ A buffer plugin for lightline.vim
 	nnoremap <Right> :bnext<CR>
 	```
 
+# Examples
+
+[nvim](https://github.com/taohex/nvim)

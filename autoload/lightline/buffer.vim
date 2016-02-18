@@ -231,7 +231,10 @@ endfunction
 
 function! lightline#buffer#bufferinfo()
 	call lightline#buffer#bufferline()
-	return g:lightline_buffer_status_info.info
+	if exists('g:lightline_buffer_status_info.info')
+		return g:lightline_buffer_status_info.info
+	endif
+	return ''
 endfunction
 
 function! lightline#buffer#bufferbefore()
