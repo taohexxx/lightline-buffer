@@ -55,19 +55,20 @@ function! s:generate_buffer_names()
 			endif
 
 			let skip = 0
-			for ex in g:lightline_buffer_excludes
-				if match(fname, ex) > -1
+			for exclude in g:lightline_buffer_excludes
+				echo exclude
+				if match(fname, exclude) > -1
 					let skip = 1
 					break
 				endif
 			endfor
 
-			let foldlen = strlen(fname)
-			if foldlen > g:lightline_buffer_maxflen
-				let fname = s:shorten_name(fname, g:lightline_buffer_maxflen, g:lightline_buffer_maxfextlen, foldlen)
-			endif
-
 			if !skip
+				let foldlen = strlen(fname)
+				if foldlen > g:lightline_buffer_maxflen
+					let fname = s:shorten_name(fname, g:lightline_buffer_maxflen, g:lightline_buffer_maxfextlen, foldlen)
+				endif
+
 				let name = ''
 				"if g:lightline_buffer_show_bufnr != 0 && g:lightline_buffer_status_info.count >= g:lightline_buffer_show_bufnr
 				"	let name = nr . ' '
@@ -93,9 +94,9 @@ function! s:generate_buffer_names()
 					let len2bufnrs[namelen] = ''
 				endif
 				let len2bufnrs[namelen] .= nr . ' '
-			endif
 
-			let flensum += strlen(nr) + namelen + strlen(g:lightline_buffer_separator) + 2	" add number and space * 2
+				let flensum += strlen(nr) + namelen + strlen(g:lightline_buffer_separator) + 2	" add number and space * 2
+			endif
 		endif
 	endfor
 	let flensum += strlen(g:lightline_buffer_active_buffer_left) + strlen(g:lightline_buffer_active_buffer_right)

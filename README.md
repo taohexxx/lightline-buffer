@@ -37,7 +37,7 @@ A buffer plugin for lightline.vim
 	let g:lightline_buffer_show_bufnr = 1
 	let g:lightline_buffer_fname_mod = ':t'	" ':.'
 	let g:lightline_buffer_rotate = 0
-	let g:lightline_buffer_excludes = ['\[vimfiler\]']
+	let g:lightline_buffer_excludes = ['vimfiler']
 	let g:lightline_buffer_status_info = {
 		\ 'count': 0,
 		\ 'before': '',
