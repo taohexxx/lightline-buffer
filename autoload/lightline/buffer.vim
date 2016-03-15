@@ -2,8 +2,8 @@
 " File: autoload/lightline/buffer.vim
 " Author: taohe <taohex@gmail.com>
 " License: MIT License
-" Updated: 2015/11/23
-" Version: 0.0.1
+" Updated: 2016/03/15
+" Version: 0.0.2
 " =============================================================================
 
 function! s:shorten_name(name, newlen, extlen, oldlen)
@@ -44,7 +44,7 @@ function! s:generate_buffer_names()
 				let modified = g:lightline_buffer_modified
 			endif
 			let fname = bufname(nr)
-			if fname != ''
+			if fname !=# ''
 				if has('modify_fname')
 					let fname = fnamemodify(fname, g:lightline_buffer_fname_mod)
 				endif
