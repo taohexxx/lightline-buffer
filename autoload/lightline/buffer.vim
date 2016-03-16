@@ -56,7 +56,6 @@ function! s:generate_buffer_names()
 
 			let skip = 0
 			for exclude in g:lightline_buffer_excludes
-				echo exclude
 				if match(fname, exclude) > -1
 					let skip = 1
 					break
