@@ -5,6 +5,20 @@
 " Updated: 2016/03/15
 " Version: 0.0.2
 " =============================================================================
+"
+function! s:check_defined(variable, default)
+	if !exists(a:variable)
+		let {a:variable} = a:default
+	endif
+endfunction
+
+call s:check_defined('g:lightline_buffer_logo', '')
+call s:check_defined('g:lightline_buffer_readonly_icon', 'RO')
+call s:check_defined('g:lightline_buffer_modified_icon', '*')
+call s:check_defined('g:lightline_buffer_git_icon', '')
+call s:check_defined('g:lightline_buffer_ellipsis_icon', '..')
+call s:check_defined('g:lightline_buffer_expand_left_icon', '<')
+call s:check_defined('g:lightline_buffer_expand_right_icon', '>')
 
 function! s:shorten_name(name, newlen, extlen, oldlen)
 	if a:oldlen <= a:newlen
@@ -41,7 +55,7 @@ function! s:generate_buffer_names()
 		if bufexists(nr) && buflisted(nr)
 			let modified = ''
 			if getbufvar(nr, '&mod')
-				let modified = g:lightline_buffer_modified
+				let modified = g:lightline_buffer_modified_icon
 			endif
 			let fname = bufname(nr)
 			if fname !=# ''
@@ -72,7 +86,7 @@ function! s:generate_buffer_names()
 				"if g:lightline_buffer_show_bufnr != 0 && g:lightline_buffer_status_info.count >= g:lightline_buffer_show_bufnr
 				"	let name = nr . ' '
 				"endif
-				let name .= fname . modified
+				let name .= fname . ' ' . modified
 
 				"if current_bufnr == nr
 				"	let name = g:lightline_buffer_active_buffer_left . name . g:lightline_buffer_active_buffer_right
