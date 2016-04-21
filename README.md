@@ -33,7 +33,6 @@ A buffer plugin for lightline.vim
 	let g:lightline_buffer_active_buffer_left = ''
 	let g:lightline_buffer_active_buffer_right = ''
 	let g:lightline_buffer_separator = ' '
-	let g:lightline_buffer_modified = ' ✭'
 	let g:lightline_buffer_show_bufnr = 1
 	let g:lightline_buffer_fname_mod = ':t'	" ':.'
 	let g:lightline_buffer_rotate = 0
