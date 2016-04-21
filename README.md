@@ -1,6 +1,6 @@
 # lightline-buffer
 
-A buffer plugin for lightline.vim
+A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 
 # Main Features
 
