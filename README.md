@@ -18,7 +18,13 @@ A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 
 2.	Add this repo to your favorite vim plugin manager
 
-	[NeoBundle](https://github.com/Shougo/neobundle.vim) is recommended
+	If you are using [Dein.vim](https://github.com/Shougo/dein.vim) (recommended)
+
+	```
+	call dein#add('taohex/lightline-buffer')
+	```
+
+	If you are using [NeoBundle](https://github.com/Shougo/neobundle.vim)
 
 	```
 	NeoBundle 'taohex/lightline-buffer'
@@ -28,6 +34,26 @@ A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 
 	```
 	set showtabline=2	" always show tabline
+
+	" use lightline-buffer in lightline
+	let g:lightline = {
+		\ 'tabline': {
+			\ 'left': [ [ 'bufferinfo' ], [ 'bufferbefore', 'buffercurrent', 'bufferafter' ], ],
+			\ 'right': [ [ 'close' ], ],
+			\ },
+		\ 'component_expand': {
+			\ 'buffercurrent': 'lightline#buffer#buffercurrent2',
+			\ },
+		\ 'component_function': {
+			\ 'bufferbefore': 'lightline#buffer#bufferbefore',
+			\ 'bufferafter': 'lightline#buffer#bufferafter',
+			\ 'bufferinfo': 'lightline#buffer#bufferinfo',
+			\ },
+		\ }
+
+	" remap arrow keys
+	nnoremap <Left> :bprev<CR>
+	nnoremap <Right> :bnext<CR>
 
 	" lightline-buffer settings
 	let g:lightline_buffer_logo = ' '
@@ -51,26 +77,6 @@ A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 	let g:lightline_buffer_minflen = 16
 	let g:lightline_buffer_minfextlen = 3
 	let g:lightline_buffer_reservelen = 20
-
-	" use lightline-buffer in lightline
-	let g:lightline = {
-		\ 'tabline': {
-			\ 'left': [ [ 'bufferinfo' ], [ 'bufferbefore', 'buffercurrent', 'bufferafter' ], ],
-			\ 'right': [ [ 'close' ], ],
-			\ },
-		\ 'component_expand': {
-			\ 'buffercurrent': 'lightline#buffer#buffercurrent2',
-			\ },
-		\ 'component_function': {
-			\ 'bufferbefore': 'lightline#buffer#bufferbefore',
-			\ 'bufferafter': 'lightline#buffer#bufferafter',
-			\ 'bufferinfo': 'lightline#buffer#bufferinfo',
-			\ },
-		\ }
-
-	" remap arrow keys
-	nnoremap <Left> :bprev<CR>
-	nnoremap <Right> :bnext<CR>
 	```
 
 # Examples
