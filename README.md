@@ -2,6 +2,8 @@
 
 A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 
+![lightline-buffer](http://taohex.github.io/lightline-buffer/images/lightline-buffer.png)
+
 # Main Features
 
 *	Show tab info and buffer info in tabline
