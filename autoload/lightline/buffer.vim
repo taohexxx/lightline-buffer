@@ -2,8 +2,8 @@
 " File: autoload/lightline/buffer.vim
 " Author: taohe <taohex@gmail.com>
 " License: MIT License
-" Updated: 2016/06/03
-" Version: 0.0.4
+" Updated: 2016/11/25
+" Version: 0.0.5
 " =============================================================================
 "
 function! s:check_defined(variable, default)
@@ -36,11 +36,11 @@ call s:check_defined('g:lightline_buffer_minfextlen', 3)
 call s:check_defined('g:lightline_buffer_reservelen', 20)
 
 let g:lightline_buffer_status_info = {
-      \ 'count': 0,
-      \ 'before': '',
-      \ 'current': '',
-      \ 'after': '',
-      \ }
+    \ 'count': 0,
+    \ 'before': '',
+    \ 'current': '',
+    \ 'after': '',
+    \ }
 call s:check_defined('g:lightline_buffer_status_info', {})
 call s:check_defined('g:lightline_buffer_status_info.count', 0)
 call s:check_defined('g:lightline_buffer_status_info.before', '')
@@ -51,14 +51,17 @@ function! s:shorten_name(name, newlen, extlen, oldlen)
   if a:oldlen <= a:newlen
     return a:name
   endif
-  return strpart(a:name, 0, a:newlen - 2 - a:extlen) . g:lightline_buffer_ellipsis_icon . strpart(a:name, a:oldlen - a:extlen, a:extlen)
+  return strpart(a:name, 0, a:newlen - 2 - a:extlen) .
+      \ g:lightline_buffer_ellipsis_icon .
+      \ strpart(a:name, a:oldlen - a:extlen, a:extlen)
 endfunction
 
 function! s:shorten_left(str, newlen, oldlen)
   if a:oldlen <= a:newlen
     return a:str
   endif
-  return g:lightline_buffer_expand_left_icon . strpart(a:str, a:oldlen - a:newlen, a:newlen - 4)
+  return g:lightline_buffer_expand_left_icon .
+      \ strpart(a:str, a:oldlen - a:newlen, a:newlen - 4)
 endfunction
 
 function! s:shorten_right(str, newlen, oldlen)
@@ -106,20 +109,24 @@ function! s:generate_buffer_names()
       if !skip
         let foldlen = strlen(fname)
         if foldlen > g:lightline_buffer_maxflen
-          let fname = s:shorten_name(fname, g:lightline_buffer_maxflen, g:lightline_buffer_maxfextlen, foldlen)
+          let fname = s:shorten_name(fname, g:lightline_buffer_maxflen,
+              \ g:lightline_buffer_maxfextlen, foldlen)
         endif
 
         let name = ''
-        "if g:lightline_buffer_show_bufnr != 0 && g:lightline_buffer_status_info.count >= g:lightline_buffer_show_bufnr
+        "if g:lightline_buffer_show_bufnr != 0 &&
+        "    \ g:lightline_buffer_status_info.count >= g:lightline_buffer_show_bufnr
         "  let name = nr . ' '
         "endif
         let name .= fname . ' ' . modified
 
         "if current_bufnr == nr
-        "  let name = g:lightline_buffer_active_buffer_left_icon . name . g:lightline_buffer_active_buffer_right_icon
+        "  let name = g:lightline_buffer_active_buffer_left_icon . name .
+        "      \ g:lightline_buffer_active_buffer_right_icon
         "  let g:lightline_buffer_status_info.current = name
         "else
-        "  let name = g:lightline_buffer_separator_icon . name . g:lightline_buffer_separator_icon
+        "  let name = g:lightline_buffer_separator_icon . name .
+        "      \ g:lightline_buffer_separator_icon
         "endif
 
         let bufnr2names[nr] = name
@@ -135,11 +142,14 @@ function! s:generate_buffer_names()
         endif
         let len2bufnrs[namelen] .= nr . ' '
 
-        let flensum += strlen(nr) + namelen + strlen(g:lightline_buffer_separator_icon) + 2  " add number and space * 2
+        " add number and space * 2
+        let flensum += strlen(nr) + namelen +
+            \ strlen(g:lightline_buffer_separator_icon) + 2
       endif
     endif
   endfor
-  let flensum += strlen(g:lightline_buffer_active_buffer_left_icon) + strlen(g:lightline_buffer_active_buffer_right_icon)
+  let flensum += strlen(g:lightline_buffer_active_buffer_left_icon) +
+      \ strlen(g:lightline_buffer_active_buffer_right_icon)
 
   let g:lightline_buffer_status_info.info = ''
   let namelens = sort(keys(len2bufnrs), "s:int_compare")
@@ -154,7 +164,8 @@ function! s:generate_buffer_names()
   "  endfor
   "  let g:lightline_buffer_status_info.info .= '; '
   "endfor
-  let g:lightline_buffer_status_info.info = g:lightline_buffer_logo . tabpagenr() . '/' . tabpagenr('$')
+  let g:lightline_buffer_status_info.info = g:lightline_buffer_logo .
+      \ tabpagenr() . '/' . tabpagenr('$')
 
   for namelen in namelens
     if flensum + g:lightline_buffer_reservelen <= &columns
@@ -167,8 +178,8 @@ function! s:generate_buffer_names()
         continue
       endif
       let foldlen = strlen(bufnr2names[bufnr])
-      let bufnr2names[bufnr] = s:shorten_name(bufnr2names[bufnr], g:lightline_buffer_minflen,
-            \ g:lightline_buffer_minfextlen, foldlen)
+      let bufnr2names[bufnr] = s:shorten_name(bufnr2names[bufnr],
+          \ g:lightline_buffer_minflen, g:lightline_buffer_minfextlen, foldlen)
       let fnewlen = strlen(bufnr2names[bufnr])
       let flensum -= foldlen - fnewlen
     endfor
@@ -177,7 +188,8 @@ function! s:generate_buffer_names()
   "while i < len(names)
   "  if flensum + g:lightline_buffer_reservelen > &columns
   "    let foldlen = strlen(names[i][1])
-  "    let names[i][1] = s:shorten_name(names[i][1], g:lightline_buffer_minflen, g:lightline_buffer_minfextlen, foldlen)
+  "    let names[i][1] = s:shorten_name(names[i][1], g:lightline_buffer_minflen,
+  "        \ g:lightline_buffer_minfextlen, foldlen)
   "    let fnewlen = strlen(names[i][1])
   "    let flensum -= foldlen - fnewlen
   "  endif
@@ -218,9 +230,12 @@ function! lightline#buffer#bufferline()
   "    elseif nr > current_bufnr
   "      let after_str .= nr . ' ' . fname . g:lightline_buffer_separator_icon
   "    else
-  "      let current_str .= g:lightline_buffer_active_buffer_left_icon . nr . g:lightline_buffer_active_buffer_right_icon . g:lightline_buffer_separator_icon
+  "      let current_str .= g:lightline_buffer_active_buffer_left_icon . nr .
+  "          \ g:lightline_buffer_active_buffer_right_icon .
+  "          \ g:lightline_buffer_separator_icon
   "    endif
-  "    let flensum += nr + fname + strlen(g:lightline_buffer_separator_icon) + 2  " add number and space * 2
+  "    let flensum += nr + fname + strlen(g:lightline_buffer_separator_icon) +
+  "        \ 2  " add number and space * 2
   "  endif
   "endfor
   for nr in range(0, len(names) - 1)
@@ -230,13 +245,16 @@ function! lightline#buffer#bufferline()
     elseif val[0] > current_bufnr
       let after_str .= val[0] . ' ' . val[1] . g:lightline_buffer_separator_icon
     else
-      let current_str .= g:lightline_buffer_active_buffer_left_icon . val[0] . ' ' . val[1] .
-            \ g:lightline_buffer_active_buffer_right_icon . g:lightline_buffer_separator_icon
+      let current_str .= g:lightline_buffer_active_buffer_left_icon .
+          \ val[0] . ' ' . val[1] .
+          \ g:lightline_buffer_active_buffer_right_icon .
+          \ g:lightline_buffer_separator_icon
     endif
     let flensum += strlen(val[0]) + strlen(val[1]) +
-          \ strlen(g:lightline_buffer_separator_icon) + 2	" add number and space * 2
+        \ strlen(g:lightline_buffer_separator_icon) + 2	" add number and space * 2
   endfor
-  let flensum += strlen(g:lightline_buffer_active_buffer_left_icon) + strlen(g:lightline_buffer_active_buffer_right_icon)
+  let flensum += strlen(g:lightline_buffer_active_buffer_left_icon) +
+      \ strlen(g:lightline_buffer_active_buffer_right_icon)
 
   let g:lightline_buffer_status_info.count = len(names)
   "let g:lightline_buffer_status_info.info = flensum . ' ' . &columns
@@ -244,27 +262,35 @@ function! lightline#buffer#bufferline()
   let current_str_len = strlen(current_str)
   let before_str_len = strlen(before_str)
   let after_str_len = strlen(after_str)
-  if before_str_len + current_str_len + after_str_len + g:lightline_buffer_reservelen > &columns
-    let max_part_len = (&columns - current_str_len - g:lightline_buffer_reservelen) / 2
+  if before_str_len + current_str_len + after_str_len +
+      \ g:lightline_buffer_reservelen > &columns
+    let max_part_len = (&columns - current_str_len -
+        \ g:lightline_buffer_reservelen) / 2
     if before_str_len < max_part_len
       let g:lightline_buffer_status_info.before = before_str
       let g:lightline_buffer_status_info.after = s:shorten_right(after_str,
-            \ &columns - current_str_len - before_str_len - g:lightline_buffer_reservelen, after_str_len)
+          \ &columns - current_str_len - before_str_len -
+          \ g:lightline_buffer_reservelen, after_str_len)
     elseif after_str_len < max_part_len
       let g:lightline_buffer_status_info.before = s:shorten_left(before_str,
-            \ &columns - current_str_len - after_str_len - g:lightline_buffer_reservelen, before_str_len)
+          \ &columns - current_str_len - after_str_len -
+          \ g:lightline_buffer_reservelen, before_str_len)
       let g:lightline_buffer_status_info.after = after_str
     else
-      let g:lightline_buffer_status_info.before = s:shorten_left(before_str, max_part_len, before_str_len)
-      let g:lightline_buffer_status_info.after = s:shorten_right(after_str, max_part_len, after_str_len)
+      let g:lightline_buffer_status_info.before =
+          \ s:shorten_left(before_str, max_part_len, before_str_len)
+      let g:lightline_buffer_status_info.after =
+          \ s:shorten_right(after_str, max_part_len, after_str_len)
     endif
   else
     let g:lightline_buffer_status_info.before = before_str
     let g:lightline_buffer_status_info.after = after_str
   endif
   " debug only
-  "let g:lightline_buffer_status_info.before = s:shorten_left(before_str, before_str_len - 14, before_str_len)
-  "let g:lightline_buffer_status_info.after = s:shorten_right(after_str, after_str_len - 14, after_str_len)
+  "let g:lightline_buffer_status_info.before =
+  "    \ s:shorten_left(before_str, before_str_len - 14, before_str_len)
+  "let g:lightline_buffer_status_info.after =
+  "    \ s:shorten_right(after_str, after_str_len - 14, after_str_len)
   let line = before_str . current_str . after_str
 
   return line
@@ -296,9 +322,13 @@ function! lightline#buffer#buffercurrent2()
 endfunction
 
 function! lightline#buffer#bufferall()
-  return "[[ '%{lightline#buffer#bufferbefore()}' ], [ '%{lightline#buffer#buffercurrent()}' ], [ '%{lightline#buffer#bufferafter()}' ]]"
+  return "[[ '%{lightline#buffer#bufferbefore()}' ], " .
+      \ "[ '%{lightline#buffer#buffercurrent()}' ], " .
+      \ "[ '%{lightline#buffer#bufferafter()}' ]]"
 endfunction
 
 function! LightlineBufferEcho()
-  echo g:lightline_buffer_status_info.before . '[' . g:lightline_buffer_status_info.current . ']' . g:lightline_buffer_status_info.after
+  echo g:lightline_buffer_status_info.before . '[' .
+      \ g:lightline_buffer_status_info.current . ']' .
+      \ g:lightline_buffer_status_info.after
 endfunction
