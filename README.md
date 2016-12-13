@@ -46,6 +46,9 @@ A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 		\ 'component_expand': {
 			\ 'buffercurrent': 'lightline#buffer#buffercurrent2',
 			\ },
+		\ 'component_type': {
+			\ 'buffercurrent': 'tabsel',
+			\ },
 		\ 'component_function': {
 			\ 'bufferbefore': 'lightline#buffer#bufferbefore',
 			\ 'bufferafter': 'lightline#buffer#bufferafter',
