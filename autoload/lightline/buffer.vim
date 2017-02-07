@@ -251,7 +251,7 @@ function! lightline#buffer#bufferline()
           \ g:lightline_buffer_separator_icon
     endif
     let flensum += strlen(val[0]) + strlen(val[1]) +
-        \ strlen(g:lightline_buffer_separator_icon) + 2	" add number and space * 2
+        \ strlen(g:lightline_buffer_separator_icon) + 2  " add number and space * 2
   endfor
   let flensum += strlen(g:lightline_buffer_active_buffer_left_icon) +
       \ strlen(g:lightline_buffer_active_buffer_right_icon)
@@ -332,3 +332,4 @@ function! LightlineBufferEcho()
       \ g:lightline_buffer_status_info.current . ']' .
       \ g:lightline_buffer_status_info.after
 endfunction
+

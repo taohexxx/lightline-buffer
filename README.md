@@ -60,7 +60,8 @@ A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 	nnoremap <Left> :bprev<CR>
 	nnoremap <Right> :bnext<CR>
 
-	" lightline-buffer settings
+	" lightline-buffer ui settings
+	" replace these symbols with ascii characters if your environment does not support unicode
 	let g:lightline_buffer_logo = ' '
 	let g:lightline_buffer_readonly_icon = ''
 	let g:lightline_buffer_modified_icon = '✭'
@@ -72,6 +73,7 @@ A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 	let g:lightline_buffer_active_buffer_right_icon = ''
 	let g:lightline_buffer_separator_icon = ' '
 
+	" lightline-buffer function settings
 	let g:lightline_buffer_show_bufnr = 1
 	let g:lightline_buffer_rotate = 0
 	let g:lightline_buffer_fname_mod = ':t'
@@ -87,3 +89,4 @@ A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 # Examples
 
 [nvim](https://github.com/taohex/nvim)
+
