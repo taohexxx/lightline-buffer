@@ -2,10 +2,13 @@
 " File: autoload/lightline/buffer.vim
 " Author: taohe <taohex@gmail.com>
 " License: MIT License
-" Updated: 2016/11/25
-" Version: 0.0.5
+" Updated: 2017/02/08
+" Version: 0.0.6
 " =============================================================================
-"
+
+let s:save_cpo = &cpo
+set cpo&vim
+
 function! s:check_defined(variable, default)
   if !exists(a:variable)
     let {a:variable} = a:default
@@ -332,4 +335,7 @@ function! LightlineBufferEcho()
       \ g:lightline_buffer_status_info.current . ']' .
       \ g:lightline_buffer_status_info.after
 endfunction
+
+let &cpo = s:save_cpo
+unlet s:save_cpo
 
