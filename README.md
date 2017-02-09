@@ -4,7 +4,7 @@ A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 
 ![lightline-buffer](http://taohex.github.io/lightline-buffer/images/lightline-buffer.png)
 
-# Main Features
+## Main Features
 
 *	Show tab info and buffer info in tabline
 
@@ -14,7 +14,7 @@ A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 
 *	Scrollable when tabline length overflow screen
 
-# Usage
+## Usage
 
 1.	Make sure you've already installed [lightline.vim](https://github.com/itchyny/lightline.vim)
 
@@ -22,19 +22,19 @@ A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 
 	If you are using [Dein.vim](https://github.com/Shougo/dein.vim) (recommended)
 
-	```
+	```vim
 	call dein#add('taohex/lightline-buffer')
 	```
 
 	If you are using [NeoBundle](https://github.com/Shougo/neobundle.vim)
 
-	```
+	```vim
 	NeoBundle 'taohex/lightline-buffer'
 	```
 
 3.	Add this block to your init.vim (for neovim) or .vimrc (for vim)
 
-	```
+	```vim
 	set showtabline=2	" always show tabline
 
 	" use lightline-buffer in lightline
@@ -86,7 +86,7 @@ A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 	let g:lightline_buffer_reservelen = 20
 	```
 
-# Examples
+## Examples
 
 [nvim](https://github.com/taohex/nvim)
 
