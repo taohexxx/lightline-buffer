@@ -88,5 +88,5 @@ A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 
 ## Examples
 
-[nvim](https://github.com/taohex/nvim)
+[Navim](https://github.com/taohex/navim)
 
