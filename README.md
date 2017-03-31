@@ -35,7 +35,8 @@ A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 3.	Add this block to your init.vim (for neovim) or .vimrc (for vim)
 
 	```vim
-	set showtabline=2	" always show tabline
+	set hidden  " allow buffer switching without saving
+	set showtabline=2  " always show tabline
 
 	" use lightline-buffer in lightline
 	let g:lightline = {

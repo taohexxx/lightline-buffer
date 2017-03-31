@@ -2,8 +2,8 @@
 " File: autoload/lightline/buffer.vim
 " Author: taohe <taohex@gmail.com>
 " License: MIT License
-" Updated: 2017/02/08
-" Version: 0.0.6
+" Updated: 2017/03/31
+" Version: 0.0.7
 " =============================================================================
 
 let s:save_cpo = &cpo
