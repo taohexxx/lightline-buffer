@@ -2,8 +2,8 @@
 " File: autoload/lightline/buffer.vim
 " Author: taohe <taohex@gmail.com>
 " License: MIT License
-" Updated: 2017/03/31
-" Version: 0.0.7
+" Updated: 2017/10/10
+" Version: 0.0.8
 " =============================================================================
 
 let s:save_cpo = &cpo
@@ -24,7 +24,8 @@ call s:check_defined('g:lightline_buffer_expand_left_icon', '<')
 call s:check_defined('g:lightline_buffer_expand_right_icon', '>')
 call s:check_defined('g:lightline_buffer_active_buffer_left_icon', '')
 call s:check_defined('g:lightline_buffer_active_buffer_right_icon', '')
-call s:check_defined('g:lightline_buffer_separator_icon', ' ')
+call s:check_defined('g:lightline_buffer_separator_icon', '  ')
+call s:check_defined('g:lightline_buffer_attribute_separator_icon', ' ')
 
 call s:check_defined('g:lightline_buffer_show_bufnr', 1)
 call s:check_defined('g:lightline_buffer_rotate', 0)
@@ -86,9 +87,12 @@ function! s:generate_buffer_names()
   let bufnr2names = {}
   for nr in range(1, bufnr('$'))
     if bufexists(nr) && buflisted(nr)
-      let modified = ''
+      let attribute = ''
       if getbufvar(nr, '&mod')
-        let modified = g:lightline_buffer_modified_icon
+        let attribute = g:lightline_buffer_attribute_separator_icon . g:lightline_buffer_modified_icon
+      endif
+      if (getbufvar(nr, '&readonly') || !getbufvar(nr, '&modifiable')) && getbufvar(nr, '&filetype') != 'help'
+        let attribute = g:lightline_buffer_attribute_separator_icon . g:lightline_buffer_readonly_icon
       endif
       let fname = bufname(nr)
       if fname !=# ''
@@ -121,7 +125,7 @@ function! s:generate_buffer_names()
         "    \ g:lightline_buffer_status_info.count >= g:lightline_buffer_show_bufnr
         "  let name = nr . ' '
         "endif
-        let name .= fname . ' ' . modified
+        let name .= fname . attribute
 
         "if current_bufnr == nr
         "  let name = g:lightline_buffer_active_buffer_left_icon . name .
@@ -145,9 +149,11 @@ function! s:generate_buffer_names()
         endif
         let len2bufnrs[namelen] .= nr . ' '
 
-        " add number and space * 2
-        let flensum += strlen(nr) + namelen +
-            \ strlen(g:lightline_buffer_separator_icon) + 2
+        let flensum += namelen + strlen(g:lightline_buffer_separator_icon)
+        if g:lightline_buffer_show_bufnr != 0
+          " add number and space
+          let flensum += strlen(nr) + 1
+        endif
       endif
     endif
   endfor
@@ -245,25 +251,27 @@ function! lightline#buffer#bufferline()
     let val = names[nr]
     let display_name = ''
     if g:lightline_buffer_show_bufnr != 0
-        let display_name.=val[0] . ' ' . val[1]
+        let display_name .= val[0] . ' ' . val[1]
     else
-        let display_name.=val[1]
+        let display_name .= val[1]
     endif
     if val[0] < current_bufnr
-      let before_str .= display_name . g:lightline_buffer_separator_icon
+      let temp_before_str = display_name . g:lightline_buffer_separator_icon
+      let before_str .= temp_before_str
+      let flensum += strlen(temp_before_str)
     elseif val[0] > current_bufnr
-      let after_str .= display_name . g:lightline_buffer_separator_icon
+      let temp_after_str = display_name . g:lightline_buffer_separator_icon
+      let after_str .= temp_after_str
+      let flensum += strlen(temp_after_str)
     else
-      let current_str .= g:lightline_buffer_active_buffer_left_icon .
+      let temp_current_str = g:lightline_buffer_active_buffer_left_icon .
           \ display_name .
           \ g:lightline_buffer_active_buffer_right_icon .
           \ g:lightline_buffer_separator_icon
+      let current_str .= temp_current_str
+      let flensum += strlen(temp_current_str)
     endif
-    let flensum += strlen(display_name) +
-        \ strlen(g:lightline_buffer_separator_icon) + 2  " add number and space * 2
   endfor
-  let flensum += strlen(g:lightline_buffer_active_buffer_left_icon) +
-      \ strlen(g:lightline_buffer_active_buffer_right_icon)
 
   let g:lightline_buffer_status_info.count = len(names)
   "let g:lightline_buffer_status_info.info = flensum . ' ' . &columns
