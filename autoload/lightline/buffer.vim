@@ -243,17 +243,23 @@ function! lightline#buffer#bufferline()
   "endfor
   for nr in range(0, len(names) - 1)
     let val = names[nr]
+    let display_name = ''
+    if g:lightline_buffer_show_bufnr != 0
+        let display_name.=val[0] . ' ' . val[1]
+    else
+        let display_name.=val[1]
+    endif
     if val[0] < current_bufnr
-      let before_str .= val[0] . ' ' . val[1] . g:lightline_buffer_separator_icon
+      let before_str .= display_name . g:lightline_buffer_separator_icon
     elseif val[0] > current_bufnr
-      let after_str .= val[0] . ' ' . val[1] . g:lightline_buffer_separator_icon
+      let after_str .= display_name . g:lightline_buffer_separator_icon
     else
       let current_str .= g:lightline_buffer_active_buffer_left_icon .
-          \ val[0] . ' ' . val[1] .
+          \ display_name .
           \ g:lightline_buffer_active_buffer_right_icon .
           \ g:lightline_buffer_separator_icon
     endif
-    let flensum += strlen(val[0]) + strlen(val[1]) +
+    let flensum += strlen(display_name) +
         \ strlen(g:lightline_buffer_separator_icon) + 2  " add number and space * 2
   endfor
   let flensum += strlen(g:lightline_buffer_active_buffer_left_icon) +
