@@ -6,13 +6,13 @@ A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 
 ## Main Features
 
-*	Show tab info and buffer info in tabline
+*	:pencil2: Show tab info and buffer info in tabline
 
-*	Support using left / right arrow key for quick switching buffer
+*	:left_right_arrow: Support using left / right arrow key for quick switching buffer
 
-*	Auto-folding for long buffer name
+*	:mag: Auto-folding for long buffer name
 
-*	Scrollable when tabline length overflow screen
+*	:triangular_ruler: Scrollable when tabline length overflow screen
 
 ## Usage
 
