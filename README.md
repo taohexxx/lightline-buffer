@@ -93,7 +93,7 @@ A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 
 ## Changes
 
-*IMPORTANT*: The `component_expand`, `component_type` and `component_function` in the config has been changed. It's NOT compatible with old versions. Please update your config file.
+**IMPORTANT**: The `component_expand`, `component_type` and `component_function` in the config has been changed. It's NOT compatible with old versions. Please update your config file.
 
 ## Examples
 
