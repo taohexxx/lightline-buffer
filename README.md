@@ -6,9 +6,11 @@ A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 
 ## Main Features
 
+*	:star2: Clickable buffer switching
+
 *	:pencil2: Show tab info and buffer info in tabline
 
-*	:left_right_arrow: Support using left / right arrow key for quick switching buffer
+*	:left_right_arrow: Support using left / right arrow key for quickly switching buffer
 
 *	:mag: Auto-folding for long buffer name
 
@@ -45,14 +47,16 @@ A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 			\ 'right': [ [ 'close' ], ],
 			\ },
 		\ 'component_expand': {
-			\ 'buffercurrent': 'lightline#buffer#buffercurrent2',
+			\ 'buffercurrent': 'lightline#buffer#buffercurrent',
+			\ 'bufferbefore': 'lightline#buffer#bufferbefore',
+			\ 'bufferafter': 'lightline#buffer#bufferafter',
 			\ },
 		\ 'component_type': {
 			\ 'buffercurrent': 'tabsel',
+			\ 'bufferbefore': 'raw',
+			\ 'bufferafter': 'raw',
 			\ },
 		\ 'component_function': {
-			\ 'bufferbefore': 'lightline#buffer#bufferbefore',
-			\ 'bufferafter': 'lightline#buffer#bufferafter',
 			\ 'bufferinfo': 'lightline#buffer#bufferinfo',
 			\ },
 		\ }
@@ -86,6 +90,10 @@ A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 	let g:lightline_buffer_minfextlen = 3
 	let g:lightline_buffer_reservelen = 20
 	```
+
+## Changes
+
+*IMPORTANT*: The `component_expand`, `component_type` and `component_function` in the config has been changed. It's NOT compatible with old versions. Please update your config file.
 
 ## Examples
 
