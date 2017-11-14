@@ -24,7 +24,8 @@ call s:check_defined('g:lightline_buffer_expand_left_icon', '<')
 call s:check_defined('g:lightline_buffer_expand_right_icon', '>')
 call s:check_defined('g:lightline_buffer_active_buffer_left_icon', '')
 call s:check_defined('g:lightline_buffer_active_buffer_right_icon', ' ')
-call s:check_defined('g:lightline_buffer_separator_icon', '  ')
+call s:check_defined('g:lightline_buffer_separator_left_icon', ' ')
+call s:check_defined('g:lightline_buffer_separator_right_icon', ' ')
 call s:check_defined('g:lightline_buffer_attribute_separator_icon', ' ')
 
 call s:check_defined('g:lightline_buffer_show_bufnr', 1)
@@ -66,8 +67,7 @@ endfunction
 
 function! s:clickable_text(text, minwid)
   if has('tablineat')
-    return '%' . a:minwid . '@lightline#buffer#clickbuf@' .
-        \ a:text . '%X'
+    return '%' . a:minwid . '@lightline#buffer#clickbuf@' . a:text . '%X'
   endif
 
   return a:text
@@ -149,18 +149,21 @@ function! s:generate_buffer_names()
 
         let l:name = ''
         "if g:lightline_buffer_show_bufnr != 0 &&
-        "    \ g:lightline_buffer_status_info.count >= g:lightline_buffer_show_bufnr
+        "    \ g:lightline_buffer_status_info.count >=
+        "    \ g:lightline_buffer_show_bufnr
         "  let l:name = nr . ' '
         "endif
         let l:name .= l:fname . l:attribute
 
         "if l:current_bufnr == nr
-        "  let l:name = g:lightline_buffer_active_buffer_left_icon . l:name .
-        "      \ g:lightline_buffer_active_buffer_right_icon
+        "  let l:name = g:lightline_buffer_separator_left_icon .
+        "      \ g:lightline_buffer_active_buffer_left_icon . l:name .
+        "      \ g:lightline_buffer_active_buffer_right_icon .
+        "      \ g:lightline_buffer_separator_right_icon
         "  let g:lightline_buffer_status_info.current = l:name
         "else
-        "  let l:name = g:lightline_buffer_separator_icon . l:name .
-        "      \ g:lightline_buffer_separator_icon
+        "  let l:name = g:lightline_buffer_separator_left_icon . l:name .
+        "      \ g:lightline_buffer_separator_right_icon
         "endif
 
         let l:bufnr2names[nr] = l:name
@@ -176,7 +179,8 @@ function! s:generate_buffer_names()
         endif
         let l:len2bufnrs[l:namelen] .= nr . ' '
 
-        let l:flensum += l:namelen + strlen(g:lightline_buffer_separator_icon)
+        let l:flensum += strlen(g:lightline_buffer_separator_left_icon) +
+            \ l:namelen + strlen(g:lightline_buffer_separator_right_icon)
         if g:lightline_buffer_show_bufnr != 0
           " add number and space
           let l:flensum += strlen(nr) + 1
@@ -216,7 +220,8 @@ function! s:generate_buffer_names()
       endif
       let l:foldlen = strlen(l:bufnr2names[bufnr])
       let l:bufnr2names[bufnr] = s:shorten_name(l:bufnr2names[bufnr],
-          \ g:lightline_buffer_minflen, g:lightline_buffer_minfextlen, l:foldlen)
+          \ g:lightline_buffer_minflen,
+          \ g:lightline_buffer_minfextlen, l:foldlen)
       let l:fnewlen = strlen(l:bufnr2names[bufnr])
       let l:flensum -= l:foldlen - l:fnewlen
     endfor
@@ -225,7 +230,8 @@ function! s:generate_buffer_names()
   "while l:i < len(l:names)
   "  if l:flensum + g:lightline_buffer_reservelen > &columns
   "    let l:foldlen = strlen(l:names[l:i][1])
-  "    let l:names[l:i][1] = s:shorten_name(l:names[l:i][1], g:lightline_buffer_minflen,
+  "    let l:names[l:i][1] = s:shorten_name(l:names[l:i][1],
+  "        \ g:lightline_buffer_minflen,
   "        \ g:lightline_buffer_minfextlen, l:foldlen)
   "    let l:fnewlen = strlen(l:names[l:i][1])
   "    let l:flensum -= l:foldlen - l:fnewlen
@@ -246,7 +252,8 @@ function! s:generate_buffer_names()
   return l:names
 endfunction
 
-function! s:cat_buffer_names(names, current_bufnr, shorten_left_len, shorten_right_len)
+function! s:cat_buffer_names(names, current_bufnr,
+    \ shorten_left_len, shorten_right_len)
   let l:current_str = ''
   let l:before_str = ''
   let l:after_str = ''
@@ -288,15 +295,21 @@ function! s:cat_buffer_names(names, current_bufnr, shorten_left_len, shorten_rig
       endif
 
       "let l:debug_str .= '<' . l:display_name
-      let l:temp_visable_str = g:lightline_buffer_separator_icon .
-          \ l:display_name . g:lightline_buffer_separator_icon
+      let l:temp_visable_str = g:lightline_buffer_separator_left_icon .
+          \ l:display_name . g:lightline_buffer_separator_right_icon
+      " first buffer not need separator left
+      if nr == 0
+        let l:temp_visable_str = l:display_name .
+            \ g:lightline_buffer_separator_right_icon
+      endif
 
       if a:shorten_left_len > 0
         " debug only
         "let g:lightline_buffer_status_info.info = a:shorten_left_len
         if l:visable_before_str_len < a:shorten_left_len
           let l:temp_visable_str_len = strlen(l:temp_visable_str)
-          if l:visable_before_str_len + l:temp_visable_str_len > a:shorten_left_len
+          if l:visable_before_str_len + l:temp_visable_str_len >
+              \ a:shorten_left_len
             let l:temp_visable_str = s:shorten_left(l:temp_visable_str,
                 \ a:shorten_left_len - l:visable_before_str_len,
                 \ l:temp_visable_str_len, a:names[0][0])
@@ -327,15 +340,16 @@ function! s:cat_buffer_names(names, current_bufnr, shorten_left_len, shorten_rig
       endif
 
       "let l:debug_str .= '>' . l:display_name
-      let l:temp_visable_str = g:lightline_buffer_separator_icon .
-          \ l:display_name . g:lightline_buffer_separator_icon
+      let l:temp_visable_str = g:lightline_buffer_separator_left_icon .
+          \ l:display_name . g:lightline_buffer_separator_right_icon
 
       if a:shorten_right_len > 0
         " debug only
         "let g:lightline_buffer_status_info.info = a:shorten_right_len
         if l:visable_after_str_len < a:shorten_right_len
           let l:temp_visable_str_len = strlen(l:temp_visable_str)
-          if l:visable_after_str_len + l:temp_visable_str_len > a:shorten_right_len
+          if l:visable_after_str_len + l:temp_visable_str_len >
+              \ a:shorten_right_len
             let l:temp_visable_str .= s:shorten_right(l:temp_visable_str,
                 \ a:shorten_right_len - l:visable_after_str_len,
                 \ l:temp_visable_str_len, a:names[len(a:names) - 1][0])
@@ -352,8 +366,8 @@ function! s:cat_buffer_names(names, current_bufnr, shorten_left_len, shorten_rig
     endif
   endfor
 
-  let l:strs = [l:current_str, l:before_str, l:after_str,
-      \ l:visable_current_str, l:visable_before_str, l:visable_after_str]
+  let l:strs = [ l:current_str, l:before_str, l:after_str,
+      \ l:visable_current_str, l:visable_before_str, l:visable_after_str ]
   "echo l:debug_str
 
   return l:strs
@@ -380,16 +394,24 @@ function! lightline#buffer#bufferline()
   "  if bufexists(nr) && buflisted(nr)
   "    let l:fname = bufname(nr)
   "    if nr < l:current_bufnr
-  "      let l:before_str .= nr . ' ' . l:fname . g:lightline_buffer_separator_icon
+  "      let l:before_str .= g:lightline_buffer_separator_left_icon . nr .
+  "          \ ' ' . l:fname . g:lightline_buffer_separator_right_icon
   "    elseif nr > l:current_bufnr
-  "      let l:after_str .= nr . ' ' . l:fname . g:lightline_buffer_separator_icon
+  "      let l:after_str .= g:lightline_buffer_separator_left_icon . nr .
+  "          \ ' ' . l:fname . g:lightline_buffer_separator_right_icon
   "    else
-  "      let l:current_str .= g:lightline_buffer_active_buffer_left_icon . nr .
-  "          \ g:lightline_buffer_active_buffer_right_icon .
-  "          \ g:lightline_buffer_separator_icon
+  "      let l:current_str .= g:lightline_buffer_separator_left_icon .
+  "          \ g:lightline_buffer_active_buffer_left_icon . nr .
+  "          \ ' ' . l:fname . g:lightline_buffer_active_buffer_right_icon .
+  "          \ g:lightline_buffer_separator_right_icon
   "    endif
-  "    let l:flensum += nr + l:fname + strlen(g:lightline_buffer_separator_icon) +
-  "        \ 2  " add number and space * 2
+  "
+  "    " add number, space and separator
+  "    let l:flensum += strlen(g:lightline_buffer_separator_left_icon) + nr +
+  "        \ 1 + l:fname + strlen(g:lightline_buffer_separator_right_icon)
+  "    if nr == l:current_bufnr
+  "      let l:flensum += strlen(g:lightline_buffer_active_buffer_left_icon) +
+  "          \ strlen(g:lightline_buffer_active_buffer_right_icon)
   "  endif
   "endfor
 
@@ -401,17 +423,19 @@ function! lightline#buffer#bufferline()
   let l:visable_current_str = l:strs[3]
   let l:visable_before_str = l:strs[4]
   let l:visable_after_str = l:strs[5]
-  "echo l:before_str . '[' . l:current_bufnr . ':' . l:current_str . ']' . l:after_str
+  " debug only
+  "echo l:before_str . '[' . l:current_str . ']' . l:after_str
 
   let l:visable_current_str_len = strlen(l:visable_current_str)
   let l:visable_before_str_len = strlen(l:visable_before_str)
   let l:visable_after_str_len = strlen(l:visable_after_str)
-  "let l:flensum = l:visable_current_str_len + l:visable_before_str_len + l:visable_after_str_len
+  "let l:flensum = l:visable_current_str_len + l:visable_before_str_len +
+  "    \ l:visable_after_str_len
   "let g:lightline_buffer_status_info.info = l:flensum . ' ' . &columns
   let g:lightline_buffer_status_info.count = len(l:names)
   let g:lightline_buffer_status_info.current = l:current_str
-  if l:visable_before_str_len + l:visable_current_str_len + l:visable_after_str_len +
-      \ g:lightline_buffer_reservelen > &columns
+  if l:visable_before_str_len + l:visable_current_str_len +
+      \ l:visable_after_str_len + g:lightline_buffer_reservelen > &columns
     let l:max_part_len = (&columns - l:visable_current_str_len -
         \ g:lightline_buffer_reservelen) / 2
 
@@ -551,7 +575,8 @@ function! lightline#buffer#clickbuf(minwid, clicks, button, modifiers) abort
   "echo 'clicks: ' . a:clicks
   "echo 'button: ' . a:button
   "echo 'modifiers: ' . a:modifiers
-  "let g:res = 'lightline#buffer#clickbuf(' . a:minwid . ', ' . a:clicks . ', ' . a:button . ', ' . a:modifiers . ')'
+  "let g:res = 'lightline#buffer#clickbuf(' . a:minwid . ', '
+  "    \ . a:clicks . ', ' . a:button . ', ' . a:modifiers . ')'
   "echo g:res
 
   " single mouse button click without modifiers pressed

@@ -43,7 +43,7 @@ A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 	" use lightline-buffer in lightline
 	let g:lightline = {
 		\ 'tabline': {
-			\ 'left': [ [ 'bufferinfo' ], [ 'bufferbefore', 'buffercurrent', 'bufferafter' ], ],
+			\ 'left': [ [ 'bufferinfo' ], [ 'separator' ], [ 'bufferbefore', 'buffercurrent', 'bufferafter' ], ],
 			\ 'right': [ [ 'close' ], ],
 			\ },
 		\ 'component_expand': {
@@ -58,6 +58,9 @@ A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 			\ },
 		\ 'component_function': {
 			\ 'bufferinfo': 'lightline#buffer#bufferinfo',
+			\ },
+		\ 'component': {
+			\ 'separator': '',
 			\ },
 		\ }
 
