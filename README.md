@@ -42,27 +42,29 @@ A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 
 	" use lightline-buffer in lightline
 	let g:lightline = {
-		\ 'tabline': {
-			\ 'left': [ [ 'bufferinfo' ], [ 'separator' ], [ 'bufferbefore', 'buffercurrent', 'bufferafter' ], ],
-			\ 'right': [ [ 'close' ], ],
+			\ 'tabline': {
+			\   'left': [ [ 'bufferinfo' ],
+			\             [ 'separator' ],
+			\             [ 'bufferbefore', 'buffercurrent', 'bufferafter' ], ],
+			\   'right': [ [ 'close' ], ],
 			\ },
-		\ 'component_expand': {
-			\ 'buffercurrent': 'lightline#buffer#buffercurrent',
-			\ 'bufferbefore': 'lightline#buffer#bufferbefore',
-			\ 'bufferafter': 'lightline#buffer#bufferafter',
+			\ 'component_expand': {
+			\   'buffercurrent': 'lightline#buffer#buffercurrent',
+			\   'bufferbefore': 'lightline#buffer#bufferbefore',
+			\   'bufferafter': 'lightline#buffer#bufferafter',
 			\ },
-		\ 'component_type': {
-			\ 'buffercurrent': 'tabsel',
-			\ 'bufferbefore': 'raw',
-			\ 'bufferafter': 'raw',
+			\ 'component_type': {
+			\   'buffercurrent': 'tabsel',
+			\   'bufferbefore': 'raw',
+			\   'bufferafter': 'raw',
 			\ },
-		\ 'component_function': {
-			\ 'bufferinfo': 'lightline#buffer#bufferinfo',
+			\ 'component_function': {
+			\   'bufferinfo': 'lightline#buffer#bufferinfo',
 			\ },
-		\ 'component': {
-			\ 'separator': '',
+			\ 'component': {
+			\   'separator': '',
 			\ },
-		\ }
+			\ }
 
 	" remap arrow keys
 	nnoremap <Left> :bprev<CR>
