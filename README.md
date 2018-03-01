@@ -1,4 +1,4 @@
-# lightline-buffer
+# lightline-buffer &middot; [![Build Status](https://travis-ci.org/taohex/lightline-buffer.svg?branch=master)](https://travis-ci.org/taohex/lightline-buffer)
 
 A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 

@@ -2,8 +2,8 @@
 " File: plugin/lightline/buffer.vim
 " Author: taohe <taohex@gmail.com>
 " License: MIT License
-" Updated: 2017/11/13
-" Version: 1.0.0
+" Updated: 2018/03/01
+" Version: 1.1.0
 " =============================================================================
 
 if exists('g:loaded_lightline_buffer')

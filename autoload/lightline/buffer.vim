@@ -2,8 +2,8 @@
 " File: autoload/lightline/buffer.vim
 " Author: taohe <taohex@gmail.com>
 " License: MIT License
-" Updated: 2017/11/13
-" Version: 1.0.0
+" Updated: 2018/03/01
+" Version: 1.1.0
 " =============================================================================
 
 let s:save_cpo = &cpo
@@ -327,6 +327,14 @@ function! s:cat_buffer_names(names, current_bufnr,
       let l:visable_before_str_len = strlen(l:visable_before_str)
     endif
   endfor
+
+  " before - ugly patch for #8 empty tabline_separator
+  if '' == g:lightline.tabline_separator.left && '' != l:before_str &&
+      \ '' != l:visable_before_str
+    let l:before_str = ' ' . l:before_str
+    let l:visable_before_str = ' ' . l:visable_before_str
+    let l:visable_before_str_len = strlen(l:visable_before_str)
+  endif
 
   " after - from left to right
   for nr in range(0, len(a:names) - 1)
