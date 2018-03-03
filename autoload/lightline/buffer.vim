@@ -474,8 +474,14 @@ function! s:cat_buffer_names(names, current_bufnr,
   " after - #8 not empty tabline_separator
   " if before_str empty and tabline_separator not empty
   " should add a space to after_str to keep text static
-  if '' != g:lightline.tabline_separator.left && '' == l:before_str &&
-      \ '' == l:visable_before_str
+  let l:tabline_separator_not_empty =
+      \ exists('g:lightline.tabline_separator.left') &&
+      \ '' != g:lightline.tabline_separator.left
+  let l:separator_not_empty =
+      \ exists('g:lightline.separator.left') &&
+      \ '' != g:lightline.separator.left
+  if (l:tabline_separator_not_empty || l:separator_not_empty) &&
+      \ '' == l:before_str && '' == l:visable_before_str
     let l:after_str = ' ' . l:after_str
     let l:visable_after_str = ' ' . l:visable_after_str
     let l:visable_after_str_len = s:mb_str_len(l:visable_after_str)
