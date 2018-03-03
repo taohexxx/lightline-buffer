@@ -2,8 +2,8 @@
 " File: autoload/lightline/buffer.vim
 " Author: taohe <taohex@gmail.com>
 " License: MIT License
-" Updated: 2018/03/01
-" Version: 1.1.0
+" Updated: 2018/03/04
+" Version: 2.0.0
 " =============================================================================
 
 let s:save_cpo = &cpo
@@ -15,6 +15,21 @@ function! s:check_defined(variable, default)
   endif
 endfunction
 
+function! s:check_deprecated_defined(variable, deprecated_variable, default)
+  if !exists(a:variable) && !exists(a:deprecated_variable)
+    let {a:variable} = a:default
+    return
+  endif
+  if exists(a:variable)
+    return
+  endif
+  if exists(a:deprecated_variable)
+    let {a:variable} = a:deprecated_variable
+    return
+  endif
+endfunction
+
+" icon
 call s:check_defined('g:lightline_buffer_logo', '')
 call s:check_defined('g:lightline_buffer_readonly_icon', 'RO')
 call s:check_defined('g:lightline_buffer_modified_icon', '*')
@@ -23,21 +38,43 @@ call s:check_defined('g:lightline_buffer_ellipsis_icon', '..')
 call s:check_defined('g:lightline_buffer_expand_left_icon', '<')
 call s:check_defined('g:lightline_buffer_expand_right_icon', '>')
 call s:check_defined('g:lightline_buffer_active_buffer_left_icon', '')
-call s:check_defined('g:lightline_buffer_active_buffer_right_icon', ' ')
+call s:check_defined('g:lightline_buffer_active_buffer_right_icon', '')
 call s:check_defined('g:lightline_buffer_separator_left_icon', ' ')
 call s:check_defined('g:lightline_buffer_separator_right_icon', ' ')
 call s:check_defined('g:lightline_buffer_attribute_separator_icon', ' ')
+call s:check_defined('g:lightline_buffer_type_separator_icon', ' ')
 
+" enable devicons, only support utf-8
+" require <https://github.com/ryanoasis/vim-devicons>
+call s:check_defined('g:lightline_buffer_enable_devicons', 1)
+
+" show buffer number
 call s:check_defined('g:lightline_buffer_show_bufnr', 1)
-call s:check_defined('g:lightline_buffer_rotate', 0)
+
+" show debug info
+call s:check_defined('g:lightline_buffer_debug_info', 0)
+
+"call s:check_defined('g:lightline_buffer_rotate', 0)
+
 " :help filename-modifiers
 call s:check_defined('g:lightline_buffer_fname_mod', ':t')  " ':.'
+
+" hide buffer list
 call s:check_defined('g:lightline_buffer_excludes', ['vimfiler'])
 
+" max file name length
 call s:check_defined('g:lightline_buffer_maxflen', 30)
+
+" max file extension length
 call s:check_defined('g:lightline_buffer_maxfextlen', 3)
+
+" min file name length
 call s:check_defined('g:lightline_buffer_minflen', 16)
+
+" min file extension length
 call s:check_defined('g:lightline_buffer_minfextlen', 3)
+
+" reserve length for other component (e.g. info, close)
 call s:check_defined('g:lightline_buffer_reservelen', 20)
 
 let g:lightline_buffer_status_info = {
@@ -55,14 +92,52 @@ call s:check_defined('g:lightline_buffer_status_info.after', '')
 " lazy recalc
 "let g:last_current_bufnr = 0
 
+" <https://vi.stackexchange.com/questions/4947/is-there-a-version-of-strpart-that-is-aware-of-characters-rather-than-bytes>
+
+if exists('*strcharpart')
+  function! s:mb_str_part(mb_string, start, len)
+    return strcharpart(a:mb_string, a:start, a:len)
+  endfunction
+else
+  function! s:mb_str_part(mb_string, start, len)
+    return matchstr(a:mb_string, '.\{,' . a:len . '}', 0, a:start + 1)
+  endfunction
+endif
+
+if exists('*strdisplaywidth')
+  function! s:mb_str_len(mb_string)
+    return strdisplaywidth(a:mb_string)
+  endfunction
+else
+  function! s:mb_str_len(mb_string)
+    return strlen(substitute(a:mb_string, '.', 'a', 'g'))
+  endfunction
+endif
+
+let g:lightline_buffer_active_buffer_left_icon_len =
+      \ s:mb_str_len(g:lightline_buffer_active_buffer_left_icon)
+let g:lightline_buffer_active_buffer_right_icon_len =
+      \ s:mb_str_len(g:lightline_buffer_active_buffer_right_icon)
+let g:lightline_buffer_separator_left_icon_len =
+      \ s:mb_str_len(g:lightline_buffer_separator_left_icon)
+let g:lightline_buffer_separator_right_icon_len =
+      \ s:mb_str_len(g:lightline_buffer_separator_right_icon)
+let g:lightline_buffer_expand_left_icon_len =
+      \ s:mb_str_len(g:lightline_buffer_expand_left_icon)
+let g:lightline_buffer_expand_right_icon_len =
+      \ s:mb_str_len(g:lightline_buffer_expand_right_icon)
+let g:lightline_buffer_ellipsis_icon_len =
+      \ s:mb_str_len(g:lightline_buffer_ellipsis_icon)
+
 function! s:shorten_name(name, newlen, extlen, oldlen)
   if a:oldlen <= a:newlen
     return a:name
   endif
 
-  return strpart(a:name, 0, a:newlen - 2 - a:extlen) .
+  return s:mb_str_part(a:name, 0,
+      \ a:newlen - g:lightline_buffer_ellipsis_icon_len - a:extlen) .
       \ g:lightline_buffer_ellipsis_icon .
-      \ strpart(a:name, a:oldlen - a:extlen, a:extlen)
+      \ s:mb_str_part(a:name, a:oldlen - a:extlen, a:extlen)
 endfunction
 
 function! s:clickable_text(text, minwid)
@@ -73,30 +148,37 @@ function! s:clickable_text(text, minwid)
   return a:text
 endfunction
 
-function! s:shorten_left(str, newlen, oldlen, minwid)
-  if a:oldlen <= a:newlen
+function! s:shorten_left(str, newlen, oldlen, my_minwid, left_minwid)
+  if a:oldlen + g:lightline_buffer_expand_left_icon_len <= a:newlen
     return a:str
   endif
-  if a:minwid < 0
+
+  if a:my_minwid < 0 || a:left_minwid < 0
     return g:lightline_buffer_expand_left_icon .
-        \ strpart(a:str, a:oldlen - a:newlen, a:newlen - 4)
+        \ s:mb_str_part(a:str,
+        \ a:oldlen - a:newlen + g:lightline_buffer_expand_left_icon_len,
+        \ a:newlen - g:lightline_buffer_expand_left_icon_len)
   endif
 
-  return s:clickable_text(g:lightline_buffer_expand_left_icon, a:minwid) .
-      \ strpart(a:str, a:oldlen - a:newlen, a:newlen - 4)
+  return s:clickable_text(g:lightline_buffer_expand_left_icon, a:left_minwid) .
+      \ s:clickable_text(s:mb_str_part(a:str,
+      \ a:oldlen - a:newlen + g:lightline_buffer_expand_left_icon_len,
+      \ a:newlen - g:lightline_buffer_expand_left_icon_len), a:my_minwid)
 endfunction
 
-function! s:shorten_right(str, newlen, oldlen, minwid)
-  if a:oldlen <= a:newlen
+function! s:shorten_right(str, newlen, oldlen, my_minwid, right_minwid)
+  if a:oldlen + g:lightline_buffer_expand_right_icon_len <= a:newlen
     return a:str
   endif
-  if a:minwid < 0
-    return strpart(a:str, 0, a:newlen - 4) .
+  if a:my_minwid < 0 || a:right_minwid < 0
+    return s:mb_str_part(a:str, 0,
+        \ a:newlen - g:lightline_buffer_expand_right_icon_len) .
         \ g:lightline_buffer_expand_right_icon
   endif
 
-  return strpart(a:str, 0, a:newlen - 4) .
-      \ s:clickable_text(g:lightline_buffer_expand_right_icon, a:minwid)
+  return s:clickable_text(s:mb_str_part(a:str,
+      \ 0, a:newlen - g:lightline_buffer_expand_right_icon_len), a:my_minwid) .
+      \ s:clickable_text(g:lightline_buffer_expand_right_icon, a:right_minwid)
 endfunction
 
 function! s:int_compare(l, r)
@@ -109,18 +191,10 @@ function! s:generate_buffer_names()
   let l:len2bufnrs = {}
   " key is always string in map
   let l:bufnr2names = {}
+
   for nr in range(1, bufnr('$'))
     if bufexists(nr) && buflisted(nr)
-      let l:attribute = ''
-      if getbufvar(nr, '&mod')
-        let l:attribute = g:lightline_buffer_attribute_separator_icon .
-            \ g:lightline_buffer_modified_icon
-      endif
-      if (getbufvar(nr, '&readonly') || !getbufvar(nr, '&modifiable')) &&
-          \ getbufvar(nr, '&filetype') != 'help'
-        let l:attribute = g:lightline_buffer_attribute_separator_icon .
-            \ g:lightline_buffer_readonly_icon
-      endif
+      " fname
       let l:fname = bufname(nr)
       if l:fname !=# ''
         if has('modify_fname')
@@ -132,6 +206,29 @@ function! s:generate_buffer_names()
         let l:fname = '[No Name]'
       endif
 
+      " attribute
+      let l:attribute = ''
+      if getbufvar(nr, '&mod')
+        let l:attribute = g:lightline_buffer_attribute_separator_icon .
+            \ g:lightline_buffer_modified_icon
+      endif
+      if (getbufvar(nr, '&readonly') || !getbufvar(nr, '&modifiable')) &&
+          \ getbufvar(nr, '&filetype') != 'help'
+        let l:attribute = g:lightline_buffer_attribute_separator_icon .
+            \ g:lightline_buffer_readonly_icon
+      endif
+
+      " icon
+      let l:icon = ''
+      if g:lightline_buffer_enable_devicons &&
+          \ exists('*WebDevIconsGetFileTypeSymbol')  " support for vim-devicons
+        " WebDevIconsGetFileTypeSymbol output symbol and a space
+        " not need to add a space by your self
+        let l:icon = g:lightline_buffer_type_separator_icon .
+            \ WebDevIconsGetFileTypeSymbol(l:fname, isdirectory(l:fname))
+      endif
+
+      " merge
       let l:skip = 0
       for exclude in g:lightline_buffer_excludes
         if match(l:fname, exclude) > -1
@@ -141,7 +238,7 @@ function! s:generate_buffer_names()
       endfor
 
       if !l:skip
-        let l:foldlen = strlen(l:fname)
+        let l:foldlen = s:mb_str_len(l:fname)
         if l:foldlen > g:lightline_buffer_maxflen
           let l:fname = s:shorten_name(l:fname, g:lightline_buffer_maxflen,
               \ g:lightline_buffer_maxfextlen, l:foldlen)
@@ -153,7 +250,7 @@ function! s:generate_buffer_names()
         "    \ g:lightline_buffer_show_bufnr
         "  let l:name = nr . ' '
         "endif
-        let l:name .= l:fname . l:attribute
+        let l:name .= l:fname . l:attribute . l:icon
 
         "if l:current_bufnr == nr
         "  let l:name = g:lightline_buffer_separator_left_icon .
@@ -168,7 +265,7 @@ function! s:generate_buffer_names()
 
         let l:bufnr2names[nr] = l:name
 
-        let l:namelen = strlen(l:name)
+        let l:namelen = s:mb_str_len(l:name)
         "if get(l:len2bufnrs, l:namelen) == 0
         "  let l:len2bufnrs[l:namelen] = []
         "endif
@@ -179,17 +276,17 @@ function! s:generate_buffer_names()
         endif
         let l:len2bufnrs[l:namelen] .= nr . ' '
 
-        let l:flensum += strlen(g:lightline_buffer_separator_left_icon) +
-            \ l:namelen + strlen(g:lightline_buffer_separator_right_icon)
+        let l:flensum += g:lightline_buffer_separator_left_icon_len +
+            \ l:namelen + g:lightline_buffer_separator_right_icon_len
         if g:lightline_buffer_show_bufnr != 0
           " add number and space
-          let l:flensum += strlen(nr) + 1
+          let l:flensum += s:mb_str_len(nr) + 1
         endif
       endif
     endif
   endfor
-  let l:flensum += strlen(g:lightline_buffer_active_buffer_left_icon) +
-      \ strlen(g:lightline_buffer_active_buffer_right_icon)
+  let l:flensum += g:lightline_buffer_active_buffer_left_icon_len +
+      \ g:lightline_buffer_active_buffer_right_icon_len
 
   let g:lightline_buffer_status_info.info = ''
   let l:namelens = sort(keys(l:len2bufnrs), "s:int_compare")
@@ -218,22 +315,22 @@ function! s:generate_buffer_names()
       if l:flensum + g:lightline_buffer_reservelen <= &columns
         continue
       endif
-      let l:foldlen = strlen(l:bufnr2names[bufnr])
+      let l:foldlen = s:mb_str_len(l:bufnr2names[bufnr])
       let l:bufnr2names[bufnr] = s:shorten_name(l:bufnr2names[bufnr],
           \ g:lightline_buffer_minflen,
           \ g:lightline_buffer_minfextlen, l:foldlen)
-      let l:fnewlen = strlen(l:bufnr2names[bufnr])
+      let l:fnewlen = s:mb_str_len(l:bufnr2names[bufnr])
       let l:flensum -= l:foldlen - l:fnewlen
     endfor
   endfor
   "let l:i = 0
   "while l:i < len(l:names)
   "  if l:flensum + g:lightline_buffer_reservelen > &columns
-  "    let l:foldlen = strlen(l:names[l:i][1])
+  "    let l:foldlen = s:mb_str_len(l:names[l:i][1])
   "    let l:names[l:i][1] = s:shorten_name(l:names[l:i][1],
   "        \ g:lightline_buffer_minflen,
   "        \ g:lightline_buffer_minfextlen, l:foldlen)
-  "    let l:fnewlen = strlen(l:names[l:i][1])
+  "    let l:fnewlen = s:mb_str_len(l:names[l:i][1])
   "    let l:flensum -= l:foldlen - l:fnewlen
   "  endif
   "  let l:i += 1
@@ -297,26 +394,27 @@ function! s:cat_buffer_names(names, current_bufnr,
       "let l:debug_str .= '<' . l:display_name
       let l:temp_visable_str = g:lightline_buffer_separator_left_icon .
           \ l:display_name . g:lightline_buffer_separator_right_icon
-      " first buffer not need separator left
-      if nr == 0
-        let l:temp_visable_str = l:display_name .
-            \ g:lightline_buffer_separator_right_icon
-      endif
 
       if a:shorten_left_len > 0
-        " debug only
-        "let g:lightline_buffer_status_info.info = a:shorten_left_len
+        if 0 != g:lightline_buffer_debug_info
+          let g:lightline_buffer_status_info.info = a:shorten_left_len
+        endif
         if l:visable_before_str_len < a:shorten_left_len
-          let l:temp_visable_str_len = strlen(l:temp_visable_str)
-          if l:visable_before_str_len + l:temp_visable_str_len >
+          let l:temp_visable_str_len = s:mb_str_len(l:temp_visable_str)
+          if l:visable_before_str_len + l:temp_visable_str_len >=
               \ a:shorten_left_len
+            let l:temp_str = s:shorten_left(l:temp_visable_str,
+                \ a:shorten_left_len - l:visable_before_str_len,
+                \ l:temp_visable_str_len, l:val[0], a:names[0][0])
+            let l:before_str = l:temp_str . l:before_str
             let l:temp_visable_str = s:shorten_left(l:temp_visable_str,
                 \ a:shorten_left_len - l:visable_before_str_len,
-                \ l:temp_visable_str_len, a:names[0][0])
+                \ l:temp_visable_str_len, -1, -1)
+          else
+            let l:before_str = s:clickable_text(l:temp_visable_str, l:val[0]) .
+                \ l:before_str
           endif
           let l:visable_before_str = l:temp_visable_str . l:visable_before_str
-          let l:before_str = s:clickable_text(l:temp_visable_str, l:val[0]) .
-              \ l:before_str
         endif
       else
         let l:visable_before_str = l:temp_visable_str . l:visable_before_str
@@ -324,17 +422,9 @@ function! s:cat_buffer_names(names, current_bufnr,
               \ l:before_str
       endif
 
-      let l:visable_before_str_len = strlen(l:visable_before_str)
+      let l:visable_before_str_len = s:mb_str_len(l:visable_before_str)
     endif
   endfor
-
-  " before - ugly patch for #8 empty tabline_separator
-  if '' == g:lightline.tabline_separator.left && '' != l:before_str &&
-      \ '' != l:visable_before_str
-    let l:before_str = ' ' . l:before_str
-    let l:visable_before_str = ' ' . l:visable_before_str
-    let l:visable_before_str_len = strlen(l:visable_before_str)
-  endif
 
   " after - from left to right
   for nr in range(0, len(a:names) - 1)
@@ -352,27 +442,44 @@ function! s:cat_buffer_names(names, current_bufnr,
           \ l:display_name . g:lightline_buffer_separator_right_icon
 
       if a:shorten_right_len > 0
-        " debug only
-        "let g:lightline_buffer_status_info.info = a:shorten_right_len
+        if 0 != g:lightline_buffer_debug_info
+          let g:lightline_buffer_status_info.info = a:shorten_right_len
+        endif
         if l:visable_after_str_len < a:shorten_right_len
-          let l:temp_visable_str_len = strlen(l:temp_visable_str)
-          if l:visable_after_str_len + l:temp_visable_str_len >
+          let l:temp_visable_str_len = s:mb_str_len(l:temp_visable_str)
+          if l:visable_after_str_len + l:temp_visable_str_len >=
               \ a:shorten_right_len
-            let l:temp_visable_str .= s:shorten_right(l:temp_visable_str,
+            let l:temp_str = s:shorten_right(l:temp_visable_str,
                 \ a:shorten_right_len - l:visable_after_str_len,
-                \ l:temp_visable_str_len, a:names[len(a:names) - 1][0])
+                \ l:temp_visable_str_len, l:val[0],
+                \ a:names[len(a:names) - 1][0])
+            let l:after_str .= l:temp_str
+            let l:temp_visable_str = s:shorten_right(l:temp_visable_str,
+                \ a:shorten_right_len - l:visable_after_str_len,
+                \ l:temp_visable_str_len, -1, -1)
+          else
+            let l:after_str .= s:clickable_text(l:temp_visable_str, l:val[0])
           endif
           let l:visable_after_str .= l:temp_visable_str
-          let l:after_str .= s:clickable_text(l:temp_visable_str, l:val[0])
         endif
       else
         let l:visable_after_str .= l:temp_visable_str
         let l:after_str .= s:clickable_text(l:temp_visable_str, l:val[0])
       endif
 
-      let l:visable_after_str_len = strlen(l:visable_after_str)
+      let l:visable_after_str_len = s:mb_str_len(l:visable_after_str)
     endif
   endfor
+
+  " after - #8 not empty tabline_separator
+  " if before_str empty and tabline_separator not empty
+  " should add a space to after_str to keep text static
+  if '' != g:lightline.tabline_separator.left && '' == l:before_str &&
+      \ '' == l:visable_before_str
+    let l:after_str = ' ' . l:after_str
+    let l:visable_after_str = ' ' . l:visable_after_str
+    let l:visable_after_str_len = s:mb_str_len(l:visable_after_str)
+  endif
 
   let l:strs = [ l:current_str, l:before_str, l:after_str,
       \ l:visable_current_str, l:visable_before_str, l:visable_after_str ]
@@ -415,11 +522,13 @@ function! lightline#buffer#bufferline()
   "    endif
   "
   "    " add number, space and separator
-  "    let l:flensum += strlen(g:lightline_buffer_separator_left_icon) + nr +
-  "        \ 1 + l:fname + strlen(g:lightline_buffer_separator_right_icon)
+  "    let l:flensum += g:lightline_buffer_separator_left_icon_len +
+  "        \ nr + 1 + l:fname +
+  "        \ g:lightline_buffer_separator_right_icon_len
   "    if nr == l:current_bufnr
-  "      let l:flensum += strlen(g:lightline_buffer_active_buffer_left_icon) +
-  "          \ strlen(g:lightline_buffer_active_buffer_right_icon)
+  "      let l:flensum +=
+  "          \ g:lightline_buffer_active_buffer_left_icon_len +
+  "          \ g:lightline_buffer_active_buffer_right_icon_len
   "  endif
   "endfor
 
@@ -434,9 +543,9 @@ function! lightline#buffer#bufferline()
   " debug only
   "echo l:before_str . '[' . l:current_str . ']' . l:after_str
 
-  let l:visable_current_str_len = strlen(l:visable_current_str)
-  let l:visable_before_str_len = strlen(l:visable_before_str)
-  let l:visable_after_str_len = strlen(l:visable_after_str)
+  let l:visable_current_str_len = s:mb_str_len(l:visable_current_str)
+  let l:visable_before_str_len = s:mb_str_len(l:visable_before_str)
+  let l:visable_after_str_len = s:mb_str_len(l:visable_after_str)
   "let l:flensum = l:visable_current_str_len + l:visable_before_str_len +
   "    \ l:visable_after_str_len
   "let g:lightline_buffer_status_info.info = l:flensum . ' ' . &columns
@@ -448,7 +557,7 @@ function! lightline#buffer#bufferline()
         \ g:lightline_buffer_reservelen) / 2
 
     " shorten
-    if l:visable_before_str_len < l:max_part_len
+    if l:visable_before_str_len <= l:max_part_len
       let l:shorten_right_len = &columns - l:visable_current_str_len -
           \ l:visable_before_str_len - g:lightline_buffer_reservelen
 
@@ -464,9 +573,11 @@ function! lightline#buffer#bufferline()
       let g:lightline_buffer_status_info.before = l:before_str
       let g:lightline_buffer_status_info.after = l:after_str
 
-      " debug only
-      "let g:lightline_buffer_status_info.info .= '>'
-    elseif l:visable_after_str_len < l:max_part_len
+      if 0 != g:lightline_buffer_debug_info
+        let g:lightline_buffer_status_info.info .= '>' . &columns . '-' .
+            \ g:lightline_buffer_reservelen
+      endif
+    elseif l:visable_after_str_len <= l:max_part_len
       let l:shorten_left_len = &columns - l:visable_current_str_len -
           \ l:visable_after_str_len - g:lightline_buffer_reservelen
 
@@ -482,12 +593,14 @@ function! lightline#buffer#bufferline()
       let g:lightline_buffer_status_info.before = l:before_str
       let g:lightline_buffer_status_info.after = l:after_str
 
-      " debug only
-      "let g:lightline_buffer_status_info.info .= '<'
+      if 0 != g:lightline_buffer_debug_info
+        let g:lightline_buffer_status_info.info .= '<' . &columns . '-' .
+            \ g:lightline_buffer_reservelen
+      endif
     else
       let l:strs = s:cat_buffer_names(l:names, l:current_bufnr,
           \ l:max_part_len, l:max_part_len)
-      let g:lightline_buffer_status_info.info = l:max_part_len
+
       let l:current_str = l:strs[0]
       let l:before_str = l:strs[1]
       let l:after_str = l:strs[2]
@@ -498,16 +611,21 @@ function! lightline#buffer#bufferline()
       let g:lightline_buffer_status_info.before = l:before_str
       let g:lightline_buffer_status_info.after = l:after_str
 
-      " debug only
-      "let g:lightline_buffer_status_info.info .= '<>'
+      if 0 != g:lightline_buffer_debug_info
+        let g:lightline_buffer_status_info.info = l:max_part_len
+        let g:lightline_buffer_status_info.info .= '<>' . &columns . '-' .
+            \ g:lightline_buffer_reservelen
+      endif
     endif
 
   else
     let g:lightline_buffer_status_info.before = l:before_str
     let g:lightline_buffer_status_info.after = l:after_str
 
-    " debug only
-    "let g:lightline_buffer_status_info.info = '='
+    if 0 != g:lightline_buffer_debug_info
+      let g:lightline_buffer_status_info.info = '=' . &columns . '-' .
+          \ g:lightline_buffer_reservelen
+    endif
   endif
 
   " debug only

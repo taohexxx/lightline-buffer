@@ -8,6 +8,8 @@ A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 
 *	:star2: Clickable buffer switching
 
+*	:page_with_curl: Show file type icon with perfect UTF-8 support
+
 *	:pencil2: Show tab info and buffer info in tabline
 
 *	:left_right_arrow: Support using left / right arrow key for quickly switching buffer
@@ -83,18 +85,38 @@ A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 	let g:lightline_buffer_active_buffer_right_icon = ''
 	let g:lightline_buffer_separator_icon = '  '
 
+	" enable devicons, only support utf-8
+	" require <https://github.com/ryanoasis/vim-devicons>
+	let g:lightline_buffer_enable_devicons = 1
+
 	" lightline-buffer function settings
 	let g:lightline_buffer_show_bufnr = 1
-	let g:lightline_buffer_rotate = 0
+
+	" :help filename-modifiers
 	let g:lightline_buffer_fname_mod = ':t'
+
+	" hide buffer list
 	let g:lightline_buffer_excludes = ['vimfiler']
 
+	" max file name length
 	let g:lightline_buffer_maxflen = 30
+
+	" max file extension length
 	let g:lightline_buffer_maxfextlen = 3
+
+	" min file name length
 	let g:lightline_buffer_minflen = 16
+
+	" min file extension length
 	let g:lightline_buffer_minfextlen = 3
+
+	" reserve length for other component (e.g. info, close)
 	let g:lightline_buffer_reservelen = 20
 	```
+
+4.	Show file type icons
+
+	Install [VimDevIcons](https://github.com/ryanoasis/vim-devicons) in your favorite vim plugin manager
 
 ## Changes
 
