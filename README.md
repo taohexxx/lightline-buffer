@@ -1,4 +1,4 @@
-# lightline-buffer &middot; [![Build Status](https://travis-ci.org/taohex/lightline-buffer.svg?branch=master)](https://travis-ci.org/taohex/lightline-buffer)
+# lightline-buffer &middot; [![Build Status](https://travis-ci.org/taohex/lightline-buffer.svg?branch=master)](https://travis-ci.org/taohex/lightline-buffer) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
 A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 
