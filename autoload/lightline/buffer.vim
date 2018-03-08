@@ -373,10 +373,8 @@ function! s:cat_buffer_names(names, current_bufnr,
       endif
 
       "let l:debug_str .= '=' . l:display_name
-      let l:current_str .= g:lightline_buffer_active_buffer_left_icon .
-          \ l:display_name . g:lightline_buffer_active_buffer_right_icon
-      let l:visable_current_str .= g:lightline_buffer_active_buffer_left_icon .
-          \ l:display_name . g:lightline_buffer_active_buffer_right_icon
+      let l:current_str .= l:display_name
+      let l:visable_current_str .= l:display_name
     endif
   endfor
 
@@ -425,6 +423,11 @@ function! s:cat_buffer_names(names, current_bufnr,
       let l:visable_before_str_len = s:mb_str_len(l:visable_before_str)
     endif
   endfor
+
+  " before - left icon
+  let l:before_str .= g:lightline_buffer_active_buffer_left_icon
+  let l:visable_before_str .= g:lightline_buffer_active_buffer_left_icon
+  let l:visable_before_str_len = s:mb_str_len(l:visable_before_str)
 
   " after - from left to right
   for nr in range(0, len(a:names) - 1)
@@ -487,6 +490,13 @@ function! s:cat_buffer_names(names, current_bufnr,
     let l:visable_after_str_len = s:mb_str_len(l:visable_after_str)
   endif
 
+  " after - right icon
+  let l:after_str = g:lightline_buffer_active_buffer_right_icon . l:after_str
+  let l:visable_after_str = g:lightline_buffer_active_buffer_right_icon .
+      \ l:visable_after_str
+  let l:visable_after_str_len = s:mb_str_len(l:visable_after_str)
+
+  " all
   let l:strs = [ l:current_str, l:before_str, l:after_str,
       \ l:visable_current_str, l:visable_before_str, l:visable_after_str ]
   "echo l:debug_str
