@@ -1,8 +1,8 @@
-# lightline-buffer &middot; [![Build Status](https://travis-ci.org/taohex/lightline-buffer.svg?branch=master)](https://travis-ci.org/taohex/lightline-buffer) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+# lightline-buffer &middot; [![Build Status](https://travis-ci.org/taohexxx/lightline-buffer.svg?branch=master)](https://travis-ci.org/taohexxx/lightline-buffer) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
 A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 
-![lightline-buffer](http://taohex.github.io/lightline-buffer/images/lightline-buffer.png)
+![lightline-buffer](http://taohexxx.github.io/lightline-buffer/images/lightline-buffer.png)
 
 ## Main Features
 
@@ -27,13 +27,13 @@ A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 	If you are using [Dein.vim](https://github.com/Shougo/dein.vim) (recommended)
 
 	```vim
-	call dein#add('taohex/lightline-buffer')
+	call dein#add('taohexxx/lightline-buffer')
 	```
 
 	If you are using [NeoBundle](https://github.com/Shougo/neobundle.vim)
 
 	```vim
-	NeoBundle 'taohex/lightline-buffer'
+	NeoBundle 'taohexxx/lightline-buffer'
 	```
 
 3.	Add this block to your init.vim (for neovim) or .vimrc (for vim)
@@ -124,5 +124,5 @@ A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 
 ## Examples
 
-[Navim](https://github.com/taohex/navim)
+[Navim](https://github.com/taohexxx/navim)
 
