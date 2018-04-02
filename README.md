@@ -118,10 +118,6 @@ A buffer plugin for [lightline.vim](https://github.com/itchyny/lightline.vim)
 
 	Install [VimDevIcons](https://github.com/ryanoasis/vim-devicons) in your favorite vim plugin manager
 
-## Changes
-
-**IMPORTANT**: The `component_expand`, `component_type` and `component_function` settings in the config has been changed. It's NOT compatible with old versions. Please update your config file.
-
 ## Examples
 
 [Navim](https://github.com/taohexxx/navim)
